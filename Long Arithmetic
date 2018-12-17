@@ -1,4 +1,5 @@
-// Long Arithmetic
+// Long Arithmetic BETA
+
 struct BigInt {
     static const long long BASE = 10;
     static const long long SIZE = 100;
