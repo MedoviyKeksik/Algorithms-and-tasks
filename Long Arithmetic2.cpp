@@ -68,7 +68,7 @@ struct BigInt {
         return n;
     }
 
-    bool operator== (const BigInt &other) {
+    bool operator==(const BigInt &other) {
         if (digits.size() != other.digits.size()) return false;
         for (int i = 0; i < (int) digits.size(); i++) {
             if (digits[i] != other.digits[i]) return false;
