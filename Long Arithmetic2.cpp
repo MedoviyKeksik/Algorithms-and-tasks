@@ -43,7 +43,6 @@ struct BigInt {
             }
             digits[i] += carry + (i < (int) other.digits.size() ?  other.digits[i] : 0);
             carry = digits[i] / BASE; digits[i] %= BASE;
-            // pr_v(digits);
         }
     }
 
