@@ -43,6 +43,7 @@ struct BigInt {
             }
             digits[i] += carry + (i < (int) other.digits.size() ?  other.digits[i] : 0);
             carry = digits[i] / BASE; digits[i] %= BASE;
+            // pr_v(digits);
         }
     }
 
@@ -68,7 +69,7 @@ struct BigInt {
         return n;
     }
 
-    bool operator==(const BigInt &other) {
+    bool operator== (const BigInt &other) {
         if (digits.size() != other.digits.size()) return false;
         for (int i = 0; i < (int) digits.size(); i++) {
             if (digits[i] != other.digits[i]) return false;
@@ -102,4 +103,5 @@ struct BigInt {
             printf("%09I64d", digits[i]);
         }
     }
+
 };
