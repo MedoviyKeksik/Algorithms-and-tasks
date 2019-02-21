@@ -5,40 +5,69 @@
 #include <cstdlib>
 #include <cstdio>
 #include <map>
+#include <climits>
+#include <set>
 
 using namespace std;
 
-struct Treap {
-    int k, cnt, p;
-    Treap *left, *right;
-};
-
-pair<Treap*, Treap*> split(Treap *t, int k) {
-    if (t == nullptr)
-        return make_pair(nullptr, nullptr);
-    int l = t->left->cnt;
-    if (l >= k) {
-        pair<Treap*, Treap*> tmp = split(t->left, k);
-        t->left = tmp.second;
-        return make_pair(tmp.first, t);
-    } else {
-        pair<Treap*, Treap*> tmp = split(t->right, k);
-        t->right = tmp.first;
-        return make_pair(t, tmp.second);
-    }
+int rnd() {
+    int x = rand() << 16;
+    x |= rand() & 0xFFFF;
+    return x;
 }
 
-Treap* merge(Treap* tl, Treap* tr) {
+struct Treap {
+    int cnt, pri;
+    Treap *left, *right;
+    Treap() {
+    }
+    Treap() {
+        cnt = 1; pri = rnd();
+        left = nullptr; right = nullptr;
+    }
+};
+
+int get_cnt(Treap* t) {
+    if (t == nullptr) return 0;
+    return t->cnt;
+}
+
+void update(Treap* t) {
+    if (t) t->cnt = 1 + get_cnt(t->left) + get_cnt(t->right);
+}
+
+void split(Treap* t, int k, Treap &l, Treap &r) {
+    if (t == nullptr) {
+        l = nullptr; r = nullptr;
+        return;
+    }
+    int l = t->left->cnt;
+    if (l >= k) {
+        r = t;
+        split(t->left, k, l, r->left)
+    } else {
+        l = t;
+        split(t->right, k, l->right, r);
+    }
+    update(l);
+    update(r);
+}
+
+Treap* merge(Treap *tl, Treap *tr) {
     if (tl == nullptr) return tr;
     if (tr == nullptr) return tl;
-    if (tl->p > tr->p) {
+    if (tl->pri > tr->pri) {
         tl->right = merge(tl->right, tr);
+        update(tl); update(tr);
         return tl;
     } else {
-        tr->left = merge(tl, tr->left);
+        tr->left = merge(tl, tr.left);
+        update(tr); update(tl);
         return tr;
     }
 }
+
+
 
 int main() {
 
