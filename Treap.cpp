@@ -1,124 +1,87 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <algorithm>
+#include <utility>
+#include <vector>
+#include <cstdlib>
+#include <cstdio>
+#include <map>
+#include <climits>
+#include <set>
 
 using namespace std;
 
 int rnd() {
-    int x = rand();
-    //x <<= 16;
-    //x ^= rand();
+    int x = rand() << 16;
+    x |= rand() & 0xFFFF;
     return x;
 }
 
-struct Treap{
-    int k, y;
-    int cnt;
-    Treap* l;
-    Treap* r;
-
-    Treap() {}
-    Treap(int _k) {
-        k = _k;
-        y = rnd();
-        cnt = 0;
-        l = nullptr;
-        r = nullptr;
+struct Treap {
+    int cnt, pri;
+    Treap *left, *right;
+    Treap() {
+        cnt = 1; pri = rnd();
+        left = nullptr; right = nullptr;
     }
 };
 
 int get_cnt(Treap* t) {
-    if (t == nullptr) {
-        return 0;
-    } else {
-        return t->cnt;
-    }
+    if (t == nullptr) return 0;
+    return t->cnt;
 }
 
 void update(Treap* t) {
-    if (t)
-        t->cnt = 1 + get_cnt(t->l) + get_cnt(t->r);
+    if (t) t->cnt = 1 + get_cnt(t->left) + get_cnt(t->right);
 }
 
-void split(Treap* v, Treap* &l, Treap* &r, int k) {
-    if (v == nullptr) {
-        l = r = nullptr;
+void split(Treap* t, int k, Treap &l, Treap &r) {
+    if (t == nullptr) {
+        l = nullptr; r = nullptr;
         return;
     }
-    if (k > v->k) {
-        l = v;
-        split(v->r, l->r, r, k);
-    } else {
-        r = v;
-        split(v->l, l, r->l, k);
-    }
-    update(l);
-    update(r);
-}
-
-void merge(Treap* &v, Treap* l, Treap* r) {
-    if (l == nullptr) {
-        v = r;
-        update(v);
-        return;
-    } else if (r == nullptr) {
-        v = l;
-        update(v);
-        return;
-    }
-    if (l->y > r->y) {
-        v = l;
-        merge(v->r, l->r, r);
-    } else {
-        v = r;
-        merge(v->l, l, r->l);
-    }
-    update(l);
-    update(r);
-}
-
-void insert(Treap* &v, Treap* t) {
-    Treap* t1;
-    Treap* t2;
-    split(v, t1, t2, t->k);
-    merge(t1, t1, t);
-    merge(v, t1, t2);
-}
-
-int find_kth(Treap* v, int k) {
-    int l = get_cnt(v->l);
-    if (l == k) {
-        return v->k;
-    }
+    int l = t->left->cnt;
     if (l >= k) {
-        return find_kth(v->l, k);
+        r = t;
+        split(t->left, k, l, r->left)
     } else {
-        return find_kth(v->r, k - l - 1);
+        l = t;
+        split(t->right, k, l->right, r);
+    }
+    update(l);
+    update(r);
+}
+
+Treap* merge(Treap *tl, Treap *tr) {
+    if (tl == nullptr) return tr;
+    if (tr == nullptr) return tl;
+    if (tl->pri > tr->pri) {
+        tl->right = merge(tl->right, tr);
+        update(tl); update(tr);
+        return tl;
+    } else {
+        tr->left = merge(tl, tr.left);
+        update(tr); update(tl);
+        return tr;
     }
 }
 
-void erase(Treap* &v, int k) {
-    Treap* t1;
-    Treap* t2;
-    Treap* t3;
-    split(v, t1, t3, k + 1);
-    split(t1, t1, t2, k);
-    merge(v, t1, t3);
+void insert(Treap *t, Treap *data) {
+    Treap *t1, *t2;
+    split(t, data->cnt, t1, t2);
+    t1 = merge(t1, data);
+    t = merge(t1, t2);
 }
+
+void erase(Treap *t, int k) {
+    Treap *t1, *t2, *t3;
+    split(t, k + 1, t1, t3);
+    split(t1, k, t1, t2);
+    t = merge(t1, t3);
+}
+
+
 
 int main() {
-    ios_base::sync_with_stdio(0);
-    int n;
-    cin >> n;
-    Treap* root = nullptr;
-    while (n--) {
-        int c, k;
-        cin >> c >> k;
-        if (c == 1) {
-            insert(root, new Treap(k));
-        } else if (c == 0) {
-            int ans = find_kth(root, get_cnt(root) - k);
-            cout << ans << "\n";
-        } else if (c == -1) {
-            erase(root, k);
-        }
-    }
+
+    return 0;
 }
