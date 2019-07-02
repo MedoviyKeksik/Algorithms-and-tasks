@@ -5,6 +5,28 @@ using namespace std;
 const int MAXN = 1e5 + 11;
 int k[MAXN], sz_k;
 
+/*
+int sift_up(int i) {
+    while (i != 0 && a[i] > a[(i - 1) / 2]) {
+        swap(a[i], a[(i - 1) / 2]);
+        i = (i - 1) / 2;
+    }
+    return i;
+}
+
+int sift_down(int i) {
+    while (2 * i + 1 < n) {
+        int left = 2 * i + 1, right = 2 * i + 2, j = left;
+        if (right < n && a[right] > a[left]) j = right;
+        if (a[i] > a[j])
+            break;
+        swap(a[i], a[j]);
+        i = j;
+    }
+    return i;
+}
+*/
+
 void in_k(int x) {
     sz_k++;
     int i    = sz_k;
